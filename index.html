@@ -1,0 +1,647 @@
+<!DOCTYPE html>
+<html lang="de" data-theme="auto">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>SRC Funksprüche</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    color-scheme: light dark;
+    /* night: deep navy field */
+    --deep: #0E2436;   /* background        */
+    --lead: #EAF1F7;   /* the prompt        */
+    --dim:  #6098BE;   /* the body text     */
+    --mute: #3A6180;   /* labels + rules    */
+    --fill: #E0A868;   /* what you fill in  */
+  }
+  @media (prefers-color-scheme: light) {
+    :root[data-theme="auto"] {
+      /* day: warm off-white field */
+      --deep: #F4F1EA;
+      --lead: #14293B;
+      --dim:  #5F819B;
+      --mute: #A9A296;
+      --fill: #A2652A;
+    }
+  }
+  /* manual overrides — after the media block so they win on source order */
+  :root[data-theme="light"] {
+    --deep: #F4F1EA;
+    --lead: #14293B;
+    --dim:  #5F819B;
+    --mute: #A9A296;
+    --fill: #A2652A;
+  }
+  :root[data-theme="dark"] {
+    --deep: #0E2436;
+    --lead: #EAF1F7;
+    --dim:  #6098BE;
+    --mute: #3A6180;
+    --fill: #E0A868;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html, body { height: 100%; background: var(--deep); }
+  body {
+    background: var(--deep);
+    color: var(--lead);
+    font-family: "Space Grotesk", -apple-system, "Segoe UI", system-ui, sans-serif;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+    -webkit-font-smoothing: antialiased;
+    touch-action: manipulation;
+    -webkit-user-select: none;
+    user-select: none;
+    cursor: pointer;
+  }
+
+  /* corner controls: theme dot right, mode switch and counter left */
+  #theme, #left {
+    position: fixed;
+    z-index: 3;
+    top: calc(3vh + env(safe-area-inset-top));
+  }
+  #theme {
+    right: calc(4vw + env(safe-area-inset-right));
+    width: 22px; height: 22px;
+    padding: 0;
+    border: none;
+    background: none;
+    color: var(--mute);
+    opacity: .45;
+    cursor: pointer;
+    transition: opacity 160ms ease, color 160ms ease;
+    -webkit-tap-highlight-color: transparent;
+  }
+  #theme:hover, #theme:focus-visible { opacity: 1; color: var(--dim); }
+  #theme:focus-visible { outline: none; }
+  #theme svg { width: 100%; height: 100%; display: block; }
+  #theme .fill { opacity: 0; transition: opacity 160ms ease; }
+  :root[data-theme="auto"] #theme .half { opacity: 1; }
+  :root[data-theme="dark"] #theme .full { opacity: 1; }
+
+  #left {
+    left: calc(4vw + env(safe-area-inset-left));
+    height: 22px;
+    display: flex;
+    align-items: center;
+    gap: 1em;
+  }
+  #mode, #deck {
+    font-size: clamp(9px, 1.5vmin, 12px);
+    font-weight: 700;
+    letter-spacing: .12em;
+    line-height: 1;
+    white-space: nowrap;
+    color: var(--mute);
+    opacity: .45;
+  }
+  /* the switch is the only thing up here you can press, so it lights up */
+  #mode {
+    padding: 0;
+    border: none;
+    background: none;
+    font-family: inherit;
+    text-transform: uppercase;
+    cursor: pointer;
+    transition: opacity 160ms ease, color 160ms ease;
+    -webkit-tap-highlight-color: transparent;
+  }
+  #mode:hover, #mode:focus-visible { opacity: 1; color: var(--dim); }
+  #mode:focus-visible { outline: none; }
+
+  /* the field: the name alone before the reveal, the whole form after it */
+  #stage {
+    position: relative;
+    z-index: 1;
+    width: min(92vw, 1000px);
+    max-height: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: calc(7vh + env(safe-area-inset-top)) 0 calc(9vh + env(safe-area-inset-bottom));
+    transition: opacity 200ms ease;
+  }
+  #stage.hide { opacity: 0; }
+
+  #title {
+    flex: none;
+    text-align: center;
+    text-wrap: balance;
+    line-height: 1.1;
+    letter-spacing: -0.015em;
+    font-weight: 700;
+    color: var(--lead);
+    font-size: clamp(26px, 6.2vmin, 54px);
+    transition: font-size 240ms cubic-bezier(.22,.7,.3,1);
+  }
+  /* once the form is on the field the name steps back and lets it lead.
+     The header is pinned to two lines and the stage stops centring, so a name
+     that wraps can never nudge the form down — the rows have to sit on the
+     same line of the screen on every card for the drill to work at all. */
+  body.shown #stage { justify-content: flex-start; }
+  body.shown #title {
+    font-size: clamp(15px, 2.5vmin, 22px);
+    /* a fixed band in viewport units, never in em: the name's size is
+       animating, and a header measured in em would breathe with it and drag
+       the form up and down through the whole transition */
+    height: clamp(38px, 6.4vmin, 56px);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+    margin-bottom: clamp(14px, 2.6vh, 26px);
+    color: var(--dim);
+  }
+
+  /* the form: label left, wording right, every section pinned to one height
+     so the same row means the same thing on every card */
+  #table {
+    display: none;
+    width: 100%;
+    min-height: 0;
+    overflow-y: auto;
+    overscroll-behavior: contain;
+    scrollbar-width: thin;
+    scrollbar-color: var(--mute) transparent;
+  }
+  body.shown #table { display: block; }
+  #table::-webkit-scrollbar { width: 6px; }
+  #table::-webkit-scrollbar-thumb { background: var(--mute); border-radius: 3px; }
+
+  .row {
+    display: grid;
+    grid-template-columns: clamp(96px, 15vw, 176px) 1fr;
+    gap: clamp(10px, 2vw, 26px);
+    align-items: start;
+    padding: clamp(6px, 1.1vh, 11px) 0;
+    border-top: 1px solid color-mix(in srgb, var(--mute) 32%, transparent);
+  }
+  .row:first-child { border-top: none; }
+  /* the rows that carry the call itself, set apart by colour alone */
+  .row.core .lab { color: var(--dim); }
+  .lab {
+    font-size: clamp(8.5px, 1.35vmin, 11px);
+    font-weight: 700;
+    letter-spacing: .13em;
+    text-transform: uppercase;
+    line-height: 1.5;
+    color: var(--mute);
+    padding-top: .18em;
+  }
+  /* every cell is as tall as its own wording. Rows therefore land at
+     different heights from card to card — the trade for never hiding text
+     behind a scroller inside a cell. */
+  .val {
+    white-space: pre-wrap;
+    font-size: clamp(11px, 1.72vmin, 15px);
+    font-weight: 500;
+    line-height: 1.5;
+    color: var(--lead);
+  }
+  /* one notation everywhere: upper case is spoken as written, <angle> is
+     yours to fill in, and 3x / ( ) / oder are markings rather than words */
+  .val .fill { color: var(--fill); }
+  .val .opt  { color: var(--mute); }
+  .val .rep  { color: var(--mute); font-weight: 700; }
+  .val .alt  { color: var(--mute); }
+
+  /* the commentary reads quieter than the wording you actually transmit */
+  .row.note .val { color: var(--dim); font-weight: 500; }
+  .val.none { color: var(--mute); }
+
+  #dock {
+    z-index: 2;
+    position: fixed;
+    left: 50%;
+    transform: translateX(-50%);
+    bottom: calc(3.4vh + env(safe-area-inset-bottom));
+    text-align: center;
+    font-size: clamp(8px, 1.4vmin, 11px);
+    font-weight: 500;
+    letter-spacing: .18em;
+    text-transform: uppercase;
+    color: var(--mute);
+    transition: opacity 180ms ease;
+    pointer-events: none;
+  }
+  #hint .click { display: none; }
+  @media (hover: hover) and (pointer: fine) {
+    #hint .tap { display: none; }
+    #hint .click { display: inline; }
+  }
+  #hint .next { display: none; }
+  body.shown #hint .first { display: none; }
+  body.shown #hint .next { display: inline; }
+
+  @media (prefers-reduced-motion: reduce) {
+    #stage, #title { transition: none; }
+  }
+</style>
+</head>
+<body>
+  <div id="left">
+    <button id="mode" type="button"></button>
+    <span id="deck"></span>
+  </div>
+
+  <button id="theme" type="button" aria-label="Theme: auto" title="Theme: auto">
+    <svg viewBox="0 0 20 20" aria-hidden="true">
+      <circle cx="10" cy="10" r="7.25" fill="none" stroke="currentColor" stroke-width="1.5"/>
+      <path class="fill half" d="M10 2.75a7.25 7.25 0 0 1 0 14.5z" fill="currentColor"/>
+      <circle class="fill full" cx="10" cy="10" r="7.25" fill="currentColor"/>
+    </svg>
+  </button>
+
+  <div id="stage">
+    <h1 id="title"></h1>
+    <div id="table"></div>
+  </div>
+
+  <div id="dock">
+    <div id="hint" aria-live="polite">
+      <span class="first"><span class="tap">Tippen zum Aufdecken</span><span class="click">Klicken zum Aufdecken</span></span>
+      <span class="next">Weiter</span>
+    </div>
+  </div>
+
+<script>
+/* every card exactly as it appears on screen. A section this card does
+   not carry is simply absent; an empty string means the row is shown
+   with its label and an empty cell, which is how a field that is not
+   spoken is expressed. */
+const CARDS = [
+  {
+    "titel": "Notmeldung",
+    "abschnitte": {
+      "DSC": "Distress Call, Grund, (wenn kein GPS) Position / Uhrzeit, 5 s Distress-Taste",
+      "Sprechfunkkanal": "16",
+      "Ankündigung": "3x MAYDAY",
+      "Adressat": "",
+      "Absender": "THIS IS (Yacht) 3x <Schiffsname>\nCALL SIGN <Buchstabiert>\nMMSI <MMSI>",
+      "Meldung": "MAYDAY\n(Yacht) <Schiffsname>\nCALL SIGN <Buchstabiert>\nMMSI <MMSI>\n\nIN POSITION <Grad> DEGREES <Minuten> MINUTES <North/South>\n<Grad> DEGREES <Minuten> MINUTES <East/West>\nAT <Zeit> UTC\n\n<Art des Notfalls> (THE SHIP IS SINKING)\n<Art der gewünschten Hilfe> (REQUIRE IMMEDIATE ASSISTANCE)\n<Weitere Angaben, die die Hilfeleistung erleichtern können> (THE SHIP IS A 32 FEET YACHT RED HULL 7 PERSONS ON BOARD)",
+      "Abschluss": "OVER",
+      "Hinweise": "Meldung: Nur 1x MAYDAY, kein THIS IS"
+    }
+  },
+  {
+    "titel": "Notmeldung bestätigen",
+    "abschnitte": {
+      "DSC": "kein DSC",
+      "Sprechfunkkanal": "16",
+      "Ankündigung": "MAYDAY",
+      "Adressat": "(Yacht) <Name des Schiffs in Not>\nCALL SIGN <Buchstabiert, falls bekannt>\noder MMSI <MMSI, falls bekannt>",
+      "Absender": "THIS IS (Yacht) <Schiffsname>\nCALL SIGN <Buchstabiert>",
+      "Meldung": "RECEIVED MAYDAY",
+      "Abschluss": "",
+      "Hinweise": "Erst nach 5 min oder auf Aufforderung, und nur wenn das eigene Schiff helfen kann. Eine DSC-Bestätigung ist Küstenfunkstellen bzw. dem MRCC vorbehalten."
+    }
+  },
+  {
+    "titel": "Notmeldung weiterleiten",
+    "abschnitte": {
+      "DSC": "kein DSC",
+      "Sprechfunkkanal": "16 oder Arbeitskanal",
+      "Ankündigung": "3x MAYDAY RELAY",
+      "Adressat": "3x ALL STATIONS\noder 3x <Küstenfunkstelle> (BREMEN RESCUE)",
+      "Absender": "THIS IS (Yacht) 3x <Schiffsname>\nCALL SIGN <Buchstabiert>\nMMSI <MMSI>",
+      "Meldung": "AT <Zeit> UTC\n\nOption 1: ON CHANNEL <Kanal> FOLLOWING RECEIVED\nMAYDAY\n(Yacht) <Schiffsname des Schiffs in Not>\nCALL SIGN <Buchstabiert>\nMMSI <MMSI>\n<Originalmeldung des Schiffs in Not>\nEND OF RECEIVED MESSAGE\n\nOption 2: FOLLOWING OBSERVED\n<Beobachtung und Art der benötigten Hilfe>",
+      "Abschluss": "OVER"
+    }
+  },
+  {
+    "titel": "Funkstille gebieten",
+    "abschnitte": {
+      "DSC": "kein DSC",
+      "Sprechfunkkanal": "16",
+      "Ankündigung": "",
+      "Adressat": "ALL STATIONS\noder <störende Funkstelle>",
+      "Absender": "",
+      "Meldung": "SILENCE MAYDAY",
+      "Abschluss": "",
+      "Hinweise": "Wird durch die Funkstelle ausgesendet, die den Funkverkehr, oder den laufenden SAR-Einsatz, leitet."
+    }
+  },
+  {
+    "titel": "Notverkehr beenden",
+    "abschnitte": {
+      "DSC": "kein DSC",
+      "Sprechfunkkanal": "16",
+      "Ankündigung": "MAYDAY",
+      "Adressat": "3x ALL STATIONS",
+      "Absender": "THIS IS (Yacht) 3x <Schiffsname>\nCALL SIGN <Buchstabiert>\nMMSI <MMSI>",
+      "Meldung": "AT <Zeit jetzt> UTC\n(Yacht) <Schiffsname des betroffenen Schiffes>\nCALL SIGN <Buchstabiert>\nMMSI <MMSI>",
+      "Abschluss": "SILENCE FINI",
+      "Hinweise": "Wird durch die Funkstelle in Not ausgesendet, oder durch die Funkstelle, die den Funkverkehr leitet (oder den On-Scene-Coordinator)."
+    }
+  },
+  {
+    "titel": "Notmeldung widerrufen",
+    "abschnitte": {
+      "DSC": "Cancel, Gerät neu starten, dann Sprechfunk",
+      "Sprechfunkkanal": "16",
+      "Ankündigung": "",
+      "Adressat": "3x ALL STATIONS",
+      "Absender": "THIS IS (Yacht) 3x <Schiffsname>\nCALL SIGN <Buchstabiert>\nMMSI <MMSI>",
+      "Meldung": "PLEASE CANCEL MY DISTRESS ALERT OF\n(<Tag und Monat, wenn nicht heute>) <Zeit des ursprünglichen Notalarms> UTC",
+      "Abschluss": "OUT"
+    }
+  },
+  {
+    "titel": "Dringlichkeitsmeldung",
+    "abschnitte": {
+      "DSC": "All Ships Call oder Individual Call (+ MMSI), Priority: Urgency",
+      "Sprechfunkkanal": "16",
+      "Ankündigung": "3x PAN PAN",
+      "Adressat": "3x ALL STATIONS\noder 3x <Küstenfunkstelle> (BREMEN RESCUE)",
+      "Absender": "THIS IS (Yacht) 3x <Schiffsname>\nCALL SIGN <Buchstabiert>\nMMSI <MMSI>",
+      "Meldung": "(IN POSITION <Grad> DEGREES <Minuten> MINUTES <North/South>\n<Grad> DEGREES <Minuten> MINUTES <East/West>\nAT <Zeit> UTC)\n\n<Meldung> (RUDDER BROKEN, DRIFTING SLOWLY TOWARDS THE COAST, REQUIRE TOWING ASSISTANCE)",
+      "Abschluss": "OVER",
+      "Hinweise": "Positionsmeldung optional je nach Meldung"
+    }
+  },
+  {
+    "titel": "Dringlichkeitsmeldung zurücknehmen",
+    "abschnitte": {
+      "DSC": "kein DSC",
+      "Sprechfunkkanal": "16",
+      "Ankündigung": "3x PAN PAN",
+      "Adressat": "3x ALL STATIONS\noder 3x <in der Dringlichkeitsmeldung adressierte Funkstelle(n)>",
+      "Absender": "THIS IS (Yacht) 3x <Schiffsname>\nCALL SIGN <Buchstabiert>\nMMSI <MMSI>",
+      "Meldung": "PLEASE CANCEL MY URGENCY MESSAGE OF\n(<Tag und Monat, wenn nicht heute>) <Zeit der ursprünglichen Dringlichkeitsmeldung> UTC",
+      "Abschluss": "OUT"
+    }
+  },
+  {
+    "titel": "Sicherheitsmeldung",
+    "abschnitte": {
+      "DSC": "All Ships Call oder Individual Call (+ MMSI), Priority: Security",
+      "Sprechfunkkanal": "16 oder Arbeitskanal",
+      "Ankündigung": "3x SECURITÉ",
+      "Adressat": "3x ALL STATIONS\noder 3x <Küstenfunkstelle> (BREMEN RESCUE)",
+      "Absender": "THIS IS (Yacht) 3x <Schiffsname>\nCALL SIGN <Buchstabiert>\nMMSI <MMSI>",
+      "Meldung": "<Meldung> (WE OBSERVED DRIFTING CONTAINERS\nIN POSITION <Grad> DEGREES <Minuten> MINUTES <North/South>\n<Grad> DEGREES <Minuten> MINUTES <East/West>\nAT <Zeit> UTC\nPLEASE NAVIGATE CAREFULLY)",
+      "Abschluss": "OUT",
+      "Hinweise": "Im Abdeckungsbereich einer Küstenfunkstelle sollte man in der Praxis eine Sicherheitsmeldung immer an die Küstenfunkstelle richten (in ihrem Arbeitskanal)."
+    }
+  },
+  {
+    "titel": "Sicherheitsmeldung zurücknehmen",
+    "abschnitte": {
+      "DSC": "kein DSC",
+      "Sprechfunkkanal": "16",
+      "Ankündigung": "3x SECURITÉ",
+      "Adressat": "3x ALL STATIONS\noder 3x <Küstenfunkstelle> (BREMEN RESCUE)",
+      "Absender": "THIS IS (Yacht) 3x <Schiffsname>\nCALL SIGN <Buchstabiert>\nMMSI <MMSI>",
+      "Meldung": "PLEASE CANCEL MY SAFETY MESSAGE OF\n(<Tag und Monat, wenn nicht heute>) <Zeit der ursprünglichen Sicherheitsmeldung> UTC",
+      "Abschluss": "OUT"
+    }
+  },
+  {
+    "titel": "Routine-DSC-Ruf an eine andere Funkstelle",
+    "abschnitte": {
+      "DSC": "DSC Call, Individual Call, MMSI, Routine, Channel, Wait for ACK",
+      "Sprechfunkkanal": "Arbeitskanal (z.B., 08, 72, 77) oder Küstenfunkstellen-Kanal",
+      "Ankündigung": "",
+      "Adressat": "(Yacht) 3x <Schiffsname> CALL SIGN <Buchstabiert> MMSI <MMSI>\noder 3x <Küstenfunkstelle>",
+      "Absender": "THIS IS (Yacht) 3x <Schiffsname>\nCALL SIGN <Buchstabiert>\nMMSI <MMSI>",
+      "Meldung": "AT WHAT TIME IS THE BRIDGE OPEN TODAY?",
+      "Abschluss": "OVER"
+    }
+  }
+];
+  /* the running order of every card — the point of the drill is that this
+     never changes, so the eye learns the shape and not the wording */
+  const SECTIONS = [
+    "DSC", "Sprechfunkkanal", "Ankündigung",
+    "Adressat", "Absender", "Meldung", "Abschluss", "Hinweise", "Beispiel"
+  ];
+  /* the four that are the call itself; the rest is setup and commentary */
+  const CORE = ["Ankündigung", "Adressat", "Absender", "Meldung", "Abschluss"];
+  /* paints one field, colouring the notation. Parentheses tint their contents
+     too, so an optional group reads as one unit rather than two stray marks. */
+  function render(el, text) {
+    el.textContent = "";
+    const re = /(<[^>]*>)|([()])|(\b\d+x\b)|(\boder\b)|(Option \d+:)/g;
+    let last = 0, depth = 0, m;
+    function push(str, cls) {
+      if (!str) return;
+      const n = document.createElement("span");
+      if (cls) n.className = cls;
+      n.textContent = str;
+      el.appendChild(n);
+    }
+    while ((m = re.exec(text)) !== null) {
+      push(text.slice(last, m.index), depth > 0 ? "opt" : "");
+      if (m[1]) push(m[1], "fill");
+      else if (m[2]) {
+        if (m[2] === "(") depth++; else depth = Math.max(0, depth - 1);
+        push(m[2], "opt");
+      }
+      else if (m[3]) push(m[3], "rep");
+      else if (m[4]) push(m[4], "alt");
+      else push(m[5], "alt");
+      last = re.lastIndex;
+    }
+    push(text.slice(last), depth > 0 ? "opt" : "");
+  }
+  const NOTE = ["DSC", "Hinweise"];
+
+  const stage = document.getElementById("stage");
+  const title = document.getElementById("title");
+  const table = document.getElementById("table");
+  const deck  = document.getElementById("deck");
+
+  function save(k, v) { try { localStorage.setItem(k, v); } catch (e) {} }
+  function load(k) { try { return localStorage.getItem(k); } catch (e) { return null; } }
+
+  /* ---- the field --------------------------------------------------------- */
+
+  const rows = {};
+  SECTIONS.forEach(function (sec) {
+    const row = document.createElement("div");
+    row.className = "row" +
+      (CORE.indexOf(sec) > -1 ? " core" : "") +
+      (NOTE.indexOf(sec) > -1 ? " note" : "");
+    const lab = document.createElement("div");
+    lab.className = "lab";
+    lab.textContent = sec;
+    const val = document.createElement("div");
+    val.className = "val";
+    row.appendChild(lab);
+    row.appendChild(val);
+    table.appendChild(row);
+    rows[sec] = { row: row, val: val };
+  });
+
+  function paint(card) {
+    title.textContent = card.titel;
+    SECTIONS.forEach(function (sec) {
+      const text = card.abschnitte[sec];
+      // a section this card does not carry has no row at all
+      const drop = text === undefined;
+      rows[sec].row.style.display = drop ? "none" : "";
+      // clear it too: a hidden row that keeps the previous card's wording is
+      // invisible but still there for find-in-page, copy-all and readers
+      if (drop) { rows[sec].val.textContent = ""; return; }
+      // empty means the field is simply not spoken; the label still shows
+      render(rows[sec].val, text);
+    });
+    // the form keeps its scroll across cards on purpose: stay on "Meldung",
+    // flip, and the next call's Meldung is on the same line of the screen
+    table.scrollTop = keptScroll;
+  }
+
+  /* ---- the deck ---------------------------------------------------------- */
+
+  /* a shuffled deck rather than a fresh die each turn: every call comes up
+     once before any of them comes up twice */
+  let order = [], at = 0, round = 1, revealed = false, busy = false;
+  // browse walks the templates in their documented order with nothing hidden;
+  // drill shuffles and holds the wording back until you ask for it
+  let browse = false;
+  let keptScroll = 0;
+
+  table.addEventListener("scroll", function () {
+    if (revealed) keptScroll = table.scrollTop;
+  });
+
+  function shuffle(a) {
+    for (let i = a.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      const t = a[i]; a[i] = a[j]; a[j] = t;
+    }
+    return a;
+  }
+
+  function newRound(first) {
+    if (browse) {
+      order = CARDS.map(function (c, i) { return i; });
+      at = 0;
+      return;
+    }
+    const last = order.length ? order[order.length - 1] : -1;
+    order = shuffle(CARDS.map(function (c, i) { return i; }));
+    // no card twice across the seam between two rounds
+    if (!first && order[0] === last && order.length > 1) {
+      const t = order[0]; order[0] = order[1]; order[1] = t;
+    }
+    at = 0;
+  }
+
+  function status() {
+    deck.textContent = (at + 1) + "/" + CARDS.length +
+                       (!browse && round > 1 ? " · R" + round : "");
+  }
+
+  function step() {
+    revealed = browse;
+    document.body.classList.toggle("shown", browse);
+    paint(CARDS[order[at]]);
+    status();
+  }
+
+  function reveal() {
+    revealed = true;
+    document.body.classList.add("shown");
+  }
+
+  function turn(delta) {
+    busy = true;
+    stage.classList.add("hide");
+    setTimeout(function () {
+      at += delta;
+      if (at >= order.length) {
+        // browse wraps round the deck; the drill deals a fresh round
+        if (browse) at = 0;
+        else { newRound(false); round++; }
+      } else if (at < 0) {
+        at = order.length - 1;
+      }
+      step();
+      stage.classList.remove("hide");
+      busy = false;
+    }, 190);
+  }
+
+  function advance() {
+    if (busy) return;
+    if (browse || revealed) turn(1);
+    else reveal();
+  }
+
+  // stepping back belongs to browsing; in the drill it would only let you
+  // peek at a card you have already been graded on
+  function back() {
+    if (busy || !browse) return;
+    turn(-1);
+  }
+
+  const modeBtn = document.getElementById("mode");
+
+  function setMode(which, keep) {
+    const showing = order.length ? order[at] : 0;
+    browse = which === "browse";
+    save("funk.mode", which);
+    modeBtn.textContent = browse ? "Blättern" : "Üben";
+    modeBtn.setAttribute("title", browse
+      ? "Modus: Blättern — umschalten auf Üben"
+      : "Modus: Üben — umschalten auf Blättern");
+    modeBtn.setAttribute("aria-label", modeBtn.getAttribute("title"));
+    round = 1;
+    newRound(true);
+    // stay on the template that is on the field rather than jumping to the top
+    if (keep) {
+      const i = order.indexOf(showing);
+      if (i > -1) at = i;
+    }
+    step();
+  }
+
+  modeBtn.addEventListener("click", function () {
+    setMode(browse ? "drill" : "browse", true);
+  });
+
+  document.addEventListener("click", function (e) {
+    if (e.target.closest && e.target.closest("#theme, #mode")) return;
+    advance();
+  });
+
+  document.addEventListener("keydown", function (e) {
+    const on = (e.target && e.target.tagName) || "";
+    if (on === "INPUT" || on === "BUTTON") return;
+    if (e.key === " " || e.key === "Enter" || e.key === "ArrowRight") {
+      e.preventDefault();
+      advance();
+    }
+    if (e.key === "ArrowLeft") { e.preventDefault(); back(); }
+  });
+
+  /* ---- theme: auto -> light -> dark -> auto ------------------------------- */
+
+  const THEMES = ["auto", "light", "dark"];
+  const root = document.documentElement;
+  const themeBtn = document.getElementById("theme");
+  let t = Math.max(0, THEMES.indexOf(load("funk.theme")));
+  function setTheme() {
+    root.dataset.theme = THEMES[t];
+    themeBtn.setAttribute("aria-label", "Theme: " + THEMES[t]);
+    themeBtn.setAttribute("title", "Theme: " + THEMES[t]);
+    save("funk.theme", THEMES[t]);
+  }
+  themeBtn.addEventListener("click", function () {
+    t = (t + 1) % THEMES.length;
+    setTheme();
+  });
+  setTheme();
+
+  setMode(load("funk.mode") === "browse" ? "browse" : "drill", false);
+</script>
+</body>
+</html>
