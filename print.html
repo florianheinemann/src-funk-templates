@@ -1,0 +1,421 @@
+<!DOCTYPE html>
+<!--
+  SRC — Sprechfunk-Vorlagen, ein Blatt A4 quer.
+
+  Diese Datei steht für sich. Sie wird NICHT mehr aus index.html erzeugt und
+  liest nichts von dort: Änderungen hier bleiben hier, Änderungen an der App
+  bleiben dort. Wer beides gleich haben will, pflegt beides.
+
+  Bearbeiten
+  ----------
+  Die Sprüche stehen nebeneinander (Spalten), die Abschnitte sind die Zeilen.
+  Jede <td> gehört zu der Spalte, die in <thead> an derselben Stelle steht —
+  Reihenfolge der Spalten:
+
+     1. Notmeldung ★
+     2. Notmeldung bestätigen ★
+     3. Notmeldung weiterleiten ★
+     4. Funkstille gebieten
+     5. Funkverkehr vor Ort
+     6. Notverkehr beenden ★
+     7. Notmeldung widerrufen ★
+     8. Dringlichkeitsmeldung ★
+     9. Dringlichkeitsmeldung zurücknehmen
+    10. Sicherheitsmeldung ★
+    11. Routine-DSC-Ruf an eine andere Funkstelle
+
+  Der Zelleninhalt steht bewusst je auf EINER Quelltextzeile: die Zellen sind
+  `white-space: pre-wrap`, ein Umbruch im Quelltext wird also mitgedruckt.
+  Zeilenumbruch in einer Zelle: die Zeile im Quelltext wirklich umbrechen.
+
+  Notation (dieselbe wie in der App)
+  ----------------------------------
+  GROSSBUCHSTABEN           wird wortwörtlich gesprochen — kein Span nötig
+  <span class="fill">…</span>   selbst einzusetzen, z. B. &lt;Schiffsname&gt;
+  <span class="rep">3x</span>   dreimal sagen
+  <span class="opt">( … )</span>  optional, Klammern gehören mit hinein
+  <span class="alt">oder</span>   Alternative, auch "Option 1:" / "Option 2:"
+  <span class="dash">·</span>   wird bewusst nicht gesprochen
+  <span class="dash">–</span>   diesen Abschnitt gibt es hier nicht
+  Die beiden Zeichen bedeuten Verschiedenes; bitte nicht angleichen.
+
+  Hinweise stehen als Fussnoten unter der Tabelle. Marke im Spaltenkopf:
+  <span class="fn">N</span>, dazu der passende <li> im footer.
+
+  Platz
+  -----
+  Das Blatt fasst 190 mm Höhe (A4 quer, 10 mm Rand). Der Satz braucht davon
+  zurzeit rund 174 mm. Wächst der Inhalt, läuft er am Bildschirm unten sichtbar
+  aus dem weissen Blatt heraus — dann Grundschrift (body font-size) oder
+  Zeilenabstand herunternehmen, bis es wieder hineinpasst.
+
+  Drucken: Querformat, Skalierung 100 %, Ränder Standard.
+-->
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<title>SRC Funksprüche — Vorlagen (A4 quer)</title>
+<style>
+  @page { size: A4 landscape; margin: 10mm; }
+
+  :root {
+    --ink:  #111418;   /* wortwörtlich gesprochen */
+    --fill: #8A4B00;   /* selbst einzusetzen      */
+    --mute: #767D84;   /* Markierungen, Labels    */
+    --soft: #474E55;   /* Kommentar               */
+    --rule: #C9CED3;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html, body { background: #8A9099; }
+  body {
+    color: var(--ink);
+    font-family: -apple-system, "Segoe UI", system-ui, "Helvetica Neue", Arial, sans-serif;
+    font-size: 6.2pt;
+    line-height: 1.25;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  /* am Bildschirm ein A4-Querblatt, im Druck das Blatt selbst */
+  .sheet {
+    width: 277mm;
+    height: 190mm;            /* der Satzspiegel von A4 quer bei 10 mm Rand */
+    margin: 8mm auto;
+    padding: 0;
+    background: #fff;
+    box-shadow: 0 2mm 6mm rgba(0,0,0,.35);
+    display: flex;
+    flex-direction: column;
+  }
+
+  header {
+    display: flex;
+    align-items: baseline;
+    gap: 5mm;
+    padding-bottom: 1mm;
+    margin-bottom: 1.4mm;
+    border-bottom: .5pt solid var(--ink);
+  }
+  h1 { font-size: 9pt; letter-spacing: -.01em; line-height: 1.1; white-space: nowrap; }
+  .key {
+    font-size: 6pt;
+    color: var(--mute);
+    display: flex;
+    gap: 3.4mm;
+    white-space: nowrap;
+  }
+  .key b { font-weight: 700; color: var(--ink); }
+  .key .fill { color: var(--fill); font-weight: 700; }
+  .key .star { color: var(--fill); }
+
+  table { width: 100%; border-collapse: collapse; table-layout: fixed; }
+
+  /* die Kopfzeile trägt die Sprüche — sie stehen nebeneinander */
+  thead th {
+    vertical-align: bottom;
+    text-align: left;
+    font-size: 6.9pt;
+    font-weight: 700;
+    line-height: 1.16;
+    letter-spacing: -.005em;
+    padding: 0 1.4mm .9mm 0;
+    border-bottom: .8pt solid var(--ink);
+    hyphens: auto;
+  }
+  thead th.corner {
+    font-size: 5.7pt;
+    letter-spacing: .06em;
+    text-transform: uppercase;
+    color: var(--mute);
+  }
+  .star { color: var(--fill); }
+
+  tbody th, tbody td {
+    vertical-align: top;
+    text-align: left;
+    padding: 1.1mm 1.4mm 1.1mm 0;
+    border-top: .4pt solid var(--rule);
+    white-space: pre-wrap;
+    overflow-wrap: break-word;
+    hyphens: auto;
+  }
+  tbody tr:first-child th, tbody tr:first-child td { border-top: none; }
+
+  tbody th {
+    font-size: 5.7pt;
+    font-weight: 700;
+    letter-spacing: .05em;
+    text-transform: uppercase;
+    line-height: 1.3;
+    color: var(--mute);
+    white-space: normal;
+    hyphens: manual;
+  }
+  /* die Zeilen, die den Spruch selbst tragen, heben sich im Label ab */
+  tbody th.core { color: var(--ink); }
+
+  /* Notation — dieselbe wie in der App */
+  .fill { color: var(--fill); }
+  .opt, .alt { color: var(--mute); }
+  .rep { color: var(--mute); font-weight: 700; }
+  td.note { color: var(--soft); }
+  /* leer heisst: wird nicht gesprochen. Fehlt heisst: gibt es hier nicht. */
+  .dash { color: var(--rule); }
+  td.silent .dash { color: var(--mute); }
+
+  /* Hinweise als Fussnotenband unter der Tabelle */
+  .fn {
+    font-size: .82em;
+    font-weight: 700;
+    color: var(--fill);
+    vertical-align: super;
+    line-height: 0;
+    margin-left: .35em;
+  }
+  footer {
+    margin-top: auto;
+    padding-top: 1.2mm;
+    border-top: .5pt solid var(--ink);
+    font-size: 6pt;
+    color: var(--soft);
+    columns: 3;
+    column-gap: 6mm;
+    column-rule: .4pt solid var(--rule);
+  }
+  footer ol { list-style: none; }
+  footer li {
+    break-inside: avoid;
+    margin-bottom: .8mm;
+    padding-left: 3.6mm;
+    text-indent: -3.6mm;
+    line-height: 1.28;
+  }
+  footer .fn { margin-left: 0; margin-right: .5mm; }
+  footer .who { font-weight: 700; color: var(--ink); }
+  footer .who::after { content: " — "; font-weight: 400; color: var(--mute); }
+
+  @media print {
+    html, body { background: #fff; }
+    .sheet { width: auto; height: auto; margin: 0; box-shadow: none; }
+    * { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+  }
+</style>
+</head>
+<body>
+  <section class="sheet">
+    <header>
+      <h1>SRC — Sprechfunk-Vorlagen</h1>
+      <div class="key">
+        <span><b>GROSSBUCHSTABEN</b> wortwörtlich</span><span><span class="fill">&lt;Einsetzen&gt;</span> selbst</span><span><b>3x</b> dreimal</span><span>( ) optional</span><span>oder&nbsp;/&nbsp;Option&nbsp;N: Alternative</span><span><b>KüFuSt</b> Küstenfunkstelle</span><span><span class="star">★</span> Pflichtaufgabe der praktischen Prüfung</span>
+      </div>
+    </header>
+
+    <table>
+      <colgroup>
+        <col style="width:16.8mm">
+        <col style="width:31.6mm">
+        <col style="width:18.4mm">
+        <col style="width:28.4mm">
+        <col style="width:16.2mm">
+        <col style="width:24.5mm">
+        <col style="width:19.5mm">
+        <col style="width:20.7mm">
+        <col style="width:27.1mm">
+        <col style="width:22.9mm">
+        <col style="width:27mm">
+        <col style="width:23.9mm">
+      </colgroup>
+      <thead>
+        <tr><th class="corner">Funkspruch</th>
+          <th scope="col">Notmeldung <span class="star">★</span><span class="fn">1</span></th>
+          <th scope="col">Notmeldung bestätigen <span class="star">★</span><span class="fn">2</span></th>
+          <th scope="col">Notmeldung weiterleiten <span class="star">★</span></th>
+          <th scope="col">Funkstille gebieten<span class="fn">3</span></th>
+          <th scope="col">Funkverkehr vor Ort<span class="fn">4</span></th>
+          <th scope="col">Notverkehr beenden <span class="star">★</span><span class="fn">5</span></th>
+          <th scope="col">Notmeldung widerrufen <span class="star">★</span></th>
+          <th scope="col">Dringlichkeitsmeldung <span class="star">★</span><span class="fn">6</span></th>
+          <th scope="col">Dringlichkeitsmeldung zurücknehmen</th>
+          <th scope="col">Sicherheitsmeldung <span class="star">★</span><span class="fn">7</span></th>
+          <th scope="col">Routine-DSC-Ruf an eine andere Funkstelle</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <th scope="row" class="note">DSC</th>
+          <td class="note">Distress Call</td>
+          <td class="note">kein DSC</td>
+          <td class="note">kein DSC</td>
+          <td class="note">kein DSC</td>
+          <td class="note">kein DSC</td>
+          <td class="note">kein DSC</td>
+          <td class="note">Cancel, Gerät neu starten, dann Sprechfunk</td>
+          <td class="note">All Ships Call <span class="alt">oder</span> Individual Call <span class="opt">(+ MMSI)</span>, Priority: Urgency</td>
+          <td class="note">kein DSC</td>
+          <td class="note">All Ships Call <span class="alt">oder</span> Individual Call <span class="opt">(+ MMSI)</span>, Priority: Security</td>
+          <td class="note">DSC Call, Individual Call, MMSI, Routine, Channel, Wait for ACK</td>
+        </tr>
+      <tr>
+          <th scope="row" class="note">Kanal</th>
+          <td class="note">16</td>
+          <td class="note">16</td>
+          <td class="note">16 <span class="alt">oder</span> Arbeitskanal</td>
+          <td class="note">16</td>
+          <td class="note">16, Simplex — alle vor Ort hören mit</td>
+          <td class="note">16</td>
+          <td class="note">16</td>
+          <td class="note">16</td>
+          <td class="note">16</td>
+          <td class="note">16 <span class="alt">oder</span> Arbeitskanal</td>
+          <td class="note">Arbeitskanal <span class="opt">(z.B., 08, 72, 77)</span> <span class="alt">oder</span> KüFuSt-Kanal</td>
+        </tr>
+      <tr>
+          <th scope="row" class="core">Ankün­digung</th>
+          <td class="core"><span class="rep">3x</span> MAYDAY</td>
+          <td class="core">MAYDAY</td>
+          <td class="core"><span class="rep">3x</span> MAYDAY RELAY</td>
+          <td class="core silent"><span class="dash">·</span></td>
+          <td class="core">MAYDAY</td>
+          <td class="core">MAYDAY</td>
+          <td class="core silent"><span class="dash">·</span></td>
+          <td class="core"><span class="rep">3x</span> PAN PAN</td>
+          <td class="core"><span class="rep">3x</span> PAN PAN</td>
+          <td class="core"><span class="rep">3x</span> SECURITÉ</td>
+          <td class="core silent"><span class="dash">·</span></td>
+        </tr>
+      <tr>
+          <th scope="row" class="core">Adressat</th>
+          <td class="core silent"><span class="dash">·</span></td>
+          <td class="core"><span class="opt">(Yacht)</span> <span class="fill">&lt;Name des Schiffs in Not&gt;</span>
+CALL SIGN <span class="fill">&lt;Buchstabiert, falls bekannt&gt;</span>
+<span class="alt">oder</span> MMSI <span class="fill">&lt;MMSI, falls bekannt&gt;</span></td>
+          <td class="core"><span class="rep">3x</span> ALL STATIONS
+<span class="alt">oder</span> <span class="rep">3x</span> <span class="fill">&lt;KüFuSt&gt;</span> <span class="opt">(BREMEN RESCUE)</span></td>
+          <td class="core">ALL STATIONS
+<span class="alt">oder</span> <span class="fill">&lt;störende Funkstelle&gt;</span></td>
+          <td class="core"><span class="fill">&lt;Schiff in Not, OSC oder helfendes Fahrzeug&gt;</span></td>
+          <td class="core"><span class="rep">3x</span> ALL STATIONS</td>
+          <td class="core"><span class="rep">3x</span> ALL STATIONS</td>
+          <td class="core"><span class="rep">3x</span> ALL STATIONS
+<span class="alt">oder</span> <span class="rep">3x</span> <span class="fill">&lt;KüFuSt&gt;</span> <span class="opt">(BREMEN RESCUE)</span></td>
+          <td class="core"><span class="rep">3x</span> ALL STATIONS
+<span class="alt">oder</span> <span class="rep">3x</span> <span class="fill">&lt;in der Dringlichkeitsmeldung adressierte Funkstelle(n)&gt;</span></td>
+          <td class="core"><span class="rep">3x</span> ALL STATIONS
+<span class="alt">oder</span> <span class="rep">3x</span> <span class="fill">&lt;KüFuSt&gt;</span> <span class="opt">(BREMEN RESCUE)</span></td>
+          <td class="core"><span class="opt">(Yacht)</span> <span class="rep">3x</span> <span class="fill">&lt;Schiffsname&gt;</span> CALL SIGN <span class="fill">&lt;Buchstabiert&gt;</span> MMSI <span class="fill">&lt;MMSI&gt;</span>
+<span class="alt">oder</span> <span class="rep">3x</span> <span class="fill">&lt;KüFuSt&gt;</span></td>
+        </tr>
+      <tr>
+          <th scope="row" class="core">Absender</th>
+          <td class="core">THIS IS <span class="opt">(Yacht)</span> <span class="rep">3x</span> <span class="fill">&lt;Schiffsname&gt;</span>
+CALL SIGN <span class="fill">&lt;Buchstabiert&gt;</span>
+MMSI <span class="fill">&lt;MMSI&gt;</span></td>
+          <td class="core">THIS IS <span class="opt">(Yacht)</span> <span class="fill">&lt;Schiffsname&gt;</span>
+CALL SIGN <span class="fill">&lt;Buchstabiert&gt;</span></td>
+          <td class="core">THIS IS <span class="opt">(Yacht)</span> <span class="rep">3x</span> <span class="fill">&lt;Schiffsname&gt;</span>
+CALL SIGN <span class="fill">&lt;Buchstabiert&gt;</span>
+MMSI <span class="fill">&lt;MMSI&gt;</span></td>
+          <td class="core silent"><span class="dash">·</span></td>
+          <td class="core">THIS IS <span class="opt">(Yacht)</span> <span class="fill">&lt;Schiffsname&gt;</span>
+CALL SIGN <span class="fill">&lt;Buchstabiert&gt;</span>
+MMSI <span class="fill">&lt;MMSI&gt;</span></td>
+          <td class="core">THIS IS <span class="opt">(Yacht)</span> <span class="rep">3x</span> <span class="fill">&lt;Schiffsname&gt;</span>
+CALL SIGN <span class="fill">&lt;Buchstabiert&gt;</span>
+MMSI <span class="fill">&lt;MMSI&gt;</span></td>
+          <td class="core">THIS IS <span class="opt">(Yacht)</span> <span class="rep">3x</span> <span class="fill">&lt;Schiffsname&gt;</span>
+CALL SIGN <span class="fill">&lt;Buchstabiert&gt;</span>
+MMSI <span class="fill">&lt;MMSI&gt;</span></td>
+          <td class="core">THIS IS <span class="opt">(Yacht)</span> <span class="rep">3x</span> <span class="fill">&lt;Schiffsname&gt;</span>
+CALL SIGN <span class="fill">&lt;Buchstabiert&gt;</span>
+MMSI <span class="fill">&lt;MMSI&gt;</span></td>
+          <td class="core">THIS IS <span class="opt">(Yacht)</span> <span class="rep">3x</span> <span class="fill">&lt;Schiffsname&gt;</span>
+CALL SIGN <span class="fill">&lt;Buchstabiert&gt;</span>
+MMSI <span class="fill">&lt;MMSI&gt;</span></td>
+          <td class="core">THIS IS <span class="opt">(Yacht)</span> <span class="rep">3x</span> <span class="fill">&lt;Schiffsname&gt;</span>
+CALL SIGN <span class="fill">&lt;Buchstabiert&gt;</span>
+MMSI <span class="fill">&lt;MMSI&gt;</span></td>
+          <td class="core">THIS IS <span class="opt">(Yacht)</span> <span class="rep">3x</span> <span class="fill">&lt;Schiffsname&gt;</span>
+CALL SIGN <span class="fill">&lt;Buchstabiert&gt;</span>
+MMSI <span class="fill">&lt;MMSI&gt;</span></td>
+        </tr>
+      <tr>
+          <th scope="row" class="core">Meldung</th>
+          <td class="core">MAYDAY
+<span class="opt">(Yacht)</span> <span class="fill">&lt;Schiffsname&gt;</span>
+CALL SIGN <span class="fill">&lt;Buchstabiert&gt;</span>
+MMSI <span class="fill">&lt;MMSI&gt;</span>
+
+IN POSITION <span class="fill">&lt;Grad&gt;</span> DEGREES <span class="fill">&lt;Minuten&gt;</span> MINUTES <span class="fill">&lt;North/South&gt;</span>
+<span class="fill">&lt;Grad&gt;</span> DEGREES <span class="fill">&lt;Minuten&gt;</span> MINUTES <span class="fill">&lt;East/West&gt;</span>
+AT <span class="fill">&lt;Zeit&gt;</span> UTC
+
+<span class="fill">&lt;Art des Notfalls&gt;</span> <span class="opt">(THE SHIP IS SINKING)</span>
+REQUIRE IMMEDIATE ASSISTANCE
+<span class="fill">&lt;Angaben, die die Hilfe erleichtern&gt;</span> <span class="opt">(THE SHIP IS ...)</span></td>
+          <td class="core silent"><span class="dash">·</span></td>
+          <td class="core">AT <span class="fill">&lt;Zeit&gt;</span> UTC
+
+<span class="alt">Option 1:</span> ON CHANNEL <span class="fill">&lt;Kanal&gt;</span> FOLLOWING RECEIVED
+MAYDAY
+<span class="opt">(Yacht)</span> <span class="fill">&lt;Schiffsname des Schiffs in Not&gt;</span>
+CALL SIGN <span class="fill">&lt;Buchstabiert&gt;</span>
+MMSI <span class="fill">&lt;MMSI&gt;</span>
+<span class="fill">&lt;Originalmeldung des Schiffs in Not&gt;</span>
+END OF RECEIVED MESSAGE
+
+<span class="alt">Option 2:</span> FOLLOWING OBSERVED
+<span class="fill">&lt;Beobachtung und Art der benötigten Hilfe&gt;</span></td>
+          <td class="core silent"><span class="dash">·</span></td>
+          <td class="core"><span class="fill">&lt;Meldung&gt;</span> <span class="opt">(I AM PROCEEDING TO YOUR ASSISTANCE
+MY POSITION IS </span><span class="fill">&lt;Grad&gt;</span><span class="opt"> DEGREES </span><span class="fill">&lt;Minuten&gt;</span><span class="opt"> MINUTES </span><span class="fill">&lt;North/South&gt;</span><span class="opt">
+</span><span class="fill">&lt;Grad&gt;</span><span class="opt"> DEGREES </span><span class="fill">&lt;Minuten&gt;</span><span class="opt"> MINUTES </span><span class="fill">&lt;East/West&gt;</span><span class="opt">
+MY ETA IS </span><span class="fill">&lt;Zeit&gt;</span><span class="opt"> UTC)</span></td>
+          <td class="core">AT <span class="fill">&lt;Zeit jetzt&gt;</span> UTC
+<span class="opt">(Yacht)</span> <span class="fill">&lt;Schiffsname des betroffenen Schiffes&gt;</span>
+CALL SIGN <span class="fill">&lt;Buchstabiert&gt;</span>
+MMSI <span class="fill">&lt;MMSI&gt;</span></td>
+          <td class="core">PLEASE CANCEL MY DISTRESS ALERT OF
+<span class="opt">(</span><span class="fill">&lt;Tag und Monat, wenn nicht heute&gt;</span><span class="opt">)</span> <span class="fill">&lt;Zeit des ursprünglichen Notalarms&gt;</span> UTC</td>
+          <td class="core"><span class="opt">(IN POSITION </span><span class="fill">&lt;Grad&gt;</span><span class="opt"> DEGREES </span><span class="fill">&lt;Minuten&gt;</span><span class="opt"> MINUTES </span><span class="fill">&lt;North/South&gt;</span><span class="opt">
+</span><span class="fill">&lt;Grad&gt;</span><span class="opt"> DEGREES </span><span class="fill">&lt;Minuten&gt;</span><span class="opt"> MINUTES </span><span class="fill">&lt;East/West&gt;</span><span class="opt">
+AT </span><span class="fill">&lt;Zeit&gt;</span><span class="opt"> UTC)</span>
+
+<span class="fill">&lt;Meldung&gt;</span> <span class="opt">(RUDDER BROKEN, DRIFTING SLOWLY TOWARDS THE COAST, REQUIRE TOWING ASSISTANCE)</span></td>
+          <td class="core">PLEASE CANCEL MY URGENCY MESSAGE OF
+<span class="opt">(</span><span class="fill">&lt;Tag und Monat, wenn nicht heute&gt;</span><span class="opt">)</span> <span class="fill">&lt;Zeit der ursprünglichen Dringlichkeitsmeldung&gt;</span> UTC</td>
+          <td class="core"><span class="fill">&lt;Meldung&gt;</span> <span class="opt">(WE OBSERVED DRIFTING CONTAINERS
+IN POSITION </span><span class="fill">&lt;Grad&gt;</span><span class="opt"> DEGREES </span><span class="fill">&lt;Minuten&gt;</span><span class="opt"> MINUTES </span><span class="fill">&lt;North/South&gt;</span><span class="opt">
+</span><span class="fill">&lt;Grad&gt;</span><span class="opt"> DEGREES </span><span class="fill">&lt;Minuten&gt;</span><span class="opt"> MINUTES </span><span class="fill">&lt;East/West&gt;</span><span class="opt">
+AT </span><span class="fill">&lt;Zeit&gt;</span><span class="opt"> UTC
+PLEASE NAVIGATE CAREFULLY)</span></td>
+          <td class="core">AT WHAT TIME IS THE BRIDGE OPEN TODAY?</td>
+        </tr>
+      <tr>
+          <th scope="row" class="core">Abschluss</th>
+          <td class="core">OVER</td>
+          <td class="core">RECEIVED MAYDAY</td>
+          <td class="core">OVER</td>
+          <td class="core">SILENCE MAYDAY</td>
+          <td class="core">OVER</td>
+          <td class="core">SILENCE FINI</td>
+          <td class="core">OUT</td>
+          <td class="core">OVER</td>
+          <td class="core">OUT</td>
+          <td class="core">OUT</td>
+          <td class="core">OVER</td>
+        </tr>
+      </tbody>
+    </table>
+
+    <footer>
+      <ol><li><span class="fn">1</span><span class="who">Notmeldung</span>Meldung: Nur <span class="rep">1x</span> MAYDAY, kein THIS IS</li>
+        <li><span class="fn">2</span><span class="who">Notmeldung bestätigen</span>Erst nach 5 min <span class="alt">oder</span> auf Aufforderung, und nur wenn das eigene Schiff helfen kann. Eine DSC-Bestätigung ist KüFuSt bzw. dem MRCC vorbehalten.</li>
+        <li><span class="fn">3</span><span class="who">Funkstille gebieten</span>Nur wer den Notverkehr <span class="alt">oder</span> SAR-Einsatz leitet, darf sie gebieten.</li>
+        <li><span class="fn">4</span><span class="who">Funkverkehr vor Ort</span>MAYDAY steht vor jeder einzelnen Meldung im laufenden Notverkehr — auch vor der kürzesten Rückfrage. Die Dreifachnennung gehört zur Eröffnung des Notverkehrs; im laufenden Verkehr wird der Absender einfach genannt. Leitung hat das Schiff in Not <span class="alt">oder</span> der OSC.</li>
+        <li><span class="fn">5</span><span class="who">Notverkehr beenden</span>Nur durch das Schiff in Not, die leitende Funkstelle <span class="alt">oder</span> den On-Scene-Coordinator <span class="opt">(OSC)</span></li>
+        <li><span class="fn">6</span><span class="who">Dringlichkeitsmeldung</span>Positionsmeldung optional je nach Meldung</li>
+        <li><span class="fn">7</span><span class="who">Sicherheitsmeldung</span>In Reichweite einer KüFuSt besser dorthin, auf deren Arbeitskanal.</li></ol>
+    </footer>
+  </section>
+</body>
+</html>
