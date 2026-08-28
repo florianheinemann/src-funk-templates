@@ -126,7 +126,7 @@
     font-weight: 700;
     line-height: 1.16;
     letter-spacing: -.005em;
-    padding: 0 1.4mm .9mm 0;
+    padding: 0 2.2mm .9mm 0;
     border-bottom: .8pt solid var(--ink);
     hyphens: auto;
   }
@@ -141,11 +141,14 @@
   tbody th, tbody td {
     vertical-align: top;
     text-align: left;
-    padding: 1.1mm 1.4mm 1.1mm 0;
+    padding: 1.1mm 2.2mm 1.1mm 0;
     border-top: .4pt solid var(--rule);
     white-space: pre-wrap;
     overflow-wrap: break-word;
-    hyphens: auto;
+    /* keine automatische Silbentrennung im Zellentext: die Trennung folgt
+       deutschen Regeln und zerlegt sonst den englischen Sprechtext
+       (TO-WING, CO-AST). Die Spruchnamen im Kopf trennt sie weiter. */
+    hyphens: manual;
   }
   tbody tr:first-child th, tbody tr:first-child td { border-top: none; }
 
@@ -157,7 +160,6 @@
     line-height: 1.3;
     color: var(--mute);
     white-space: normal;
-    hyphens: manual;
   }
   /* die Zeilen, die den Spruch selbst tragen, heben sich im Label ab */
   tbody th.core { color: var(--ink); }
@@ -231,17 +233,17 @@
     <table>
       <colgroup>
         <col style="width:16.8mm">
-        <col style="width:31.6mm">
-        <col style="width:27.1mm">
-        <col style="width:27mm">
-        <col style="width:28.4mm">
-        <col style="width:19.5mm">
-        <col style="width:20.7mm">
-        <col style="width:18.4mm">
+        <col style="width:25mm">
+        <col style="width:24.8mm">
+        <col style="width:24.8mm">
         <col style="width:24.5mm">
-        <col style="width:22.9mm">
-        <col style="width:23.9mm">
-        <col style="width:16.2mm">
+        <col style="width:22.1mm">
+        <col style="width:23mm">
+        <col style="width:21.5mm">
+        <col style="width:24.3mm">
+        <col style="width:24.3mm">
+        <col style="width:24.7mm">
+        <col style="width:21.2mm">
       </colgroup>
       <thead>
         <tr>
@@ -283,7 +285,7 @@
           <td class="note">16</td>
           <td class="note">16</td>
           <td class="note">16</td>
-          <td class="note">16, Simplex — alle vor Ort hören mit</td>
+          <td class="note">16</td>
           <td class="note">16</td>
           <td class="note">Arbeitskanal <span class="opt">(z.B., 08, 72, 77)</span> <span class="alt">oder</span> KüFuSt-Kanal</td>
           <td class="note">16</td>
@@ -308,12 +310,12 @@
           <td class="core" colspan="3"><span class="rep">3x</span> ALL STATIONS
 <span class="alt">oder</span> <span class="rep">3x</span> <span class="fill">&lt;KüFuSt&gt;</span> <span class="opt">(BREMEN RESCUE)</span></td>
           <td class="core" colspan="2"><span class="rep">3x</span> ALL STATIONS</td>
-          <td class="core"><span class="opt">(Yacht)</span> <span class="fill">&lt;Name des Schiffs in Not&gt;</span>
-CALL SIGN <span class="fill">&lt;Buchstabiert, falls bekannt&gt;</span>
-<span class="alt">oder</span> MMSI <span class="fill">&lt;MMSI, falls bekannt&gt;</span></td>
+          <td class="core"><span class="opt">(Yacht)</span> <span class="fill">&lt;Schiff in Not&gt;</span>
+CALL SIGN <span class="fill">&lt;Buchstabiert&gt;</span>
+<span class="alt">oder</span> MMSI <span class="fill">&lt;MMSI&gt;</span></td>
           <td class="core"><span class="fill">&lt;Schiff in Not, OSC oder helfendes Fahrzeug&gt;</span></td>
           <td class="core"><span class="rep">3x</span> ALL STATIONS
-<span class="alt">oder</span> <span class="rep">3x</span> <span class="fill">&lt;in der Dringlichkeitsmeldung adressierte Funkstelle(n)&gt;</span></td>
+<span class="alt">oder</span> <span class="rep">3x</span> <span class="fill">&lt;in der Dringlichkeits­meldung adressierte Funkstelle(n)&gt;</span></td>
           <td class="core"><span class="opt">(Yacht)</span> <span class="rep">3x</span> <span class="fill">&lt;Schiffsname&gt;</span> CALL SIGN <span class="fill">&lt;Buchstabiert&gt;</span> MMSI <span class="fill">&lt;MMSI&gt;</span>
 <span class="alt">oder</span> <span class="rep">3x</span> <span class="fill">&lt;KüFuSt&gt;</span></td>
           <td class="core">ALL STATIONS
@@ -380,7 +382,7 @@ MY POSITION IS </span><span class="fill">&lt;Grad&gt;</span><span class="opt"> D
 </span><span class="fill">&lt;Grad&gt;</span><span class="opt"> DEGREES </span><span class="fill">&lt;Minuten&gt;</span><span class="opt"> MINUTES </span><span class="fill">&lt;East/West&gt;</span><span class="opt">
 MY ETA IS </span><span class="fill">&lt;Zeit&gt;</span><span class="opt"> UTC)</span></td>
           <td class="core">PLEASE CANCEL MY URGENCY MESSAGE OF
-<span class="opt">(</span><span class="fill">&lt;Tag und Monat, wenn nicht heute&gt;</span><span class="opt">)</span> <span class="fill">&lt;Zeit der ursprünglichen Dringlichkeitsmeldung&gt;</span> UTC</td>
+<span class="opt">(</span><span class="fill">&lt;Tag und Monat, wenn nicht heute&gt;</span><span class="opt">)</span> <span class="fill">&lt;Zeit der ursprünglichen Dringlichkeits­meldung&gt;</span> UTC</td>
           <td class="core">AT WHAT TIME IS THE BRIDGE OPEN TODAY?</td>
           <td class="core silent"><span class="dash">·</span></td>
         </tr>
