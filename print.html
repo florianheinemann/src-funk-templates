@@ -58,6 +58,13 @@
   Zeilenabstand herunternehmen, bis es wieder hineinpasst.
 
   Drucken: Querformat, Skalierung 100 %, Ränder Standard.
+
+  Daneben liegt print.pdf, eine gedruckte Fassung dieser Datei. Sie wird
+  nicht automatisch nachgezogen — nach einer Änderung hier neu erzeugen:
+
+    "/Applications/Google Chrome.app/Contents/MacOS/Google Chrome" \
+      --headless=new --no-pdf-header-footer --virtual-time-budget=4000 \
+      --print-to-pdf=print.pdf file://$PWD/print.html
 -->
 <html lang="de">
 <head>
@@ -408,7 +415,7 @@ MY ETA IS </span><span class="fill">&lt;Zeit&gt;</span><span class="opt"> UTC)</
         <li><span class="fn">1</span><span class="who">Notmeldung</span>Meldung: Nur <span class="rep">1x</span> MAYDAY, kein THIS IS</li>
         <li><span class="fn">2</span><span class="who">Dringlichkeitsmeldung</span>Positionsmeldung optional je nach Meldung</li>
         <li><span class="fn">3</span><span class="who">Sicherheitsmeldung</span>In Reichweite einer KüFuSt besser dorthin, auf deren Arbeitskanal.</li>
-        <li><span class="fn">4</span><span class="who">Notverkehr beenden</span>Nur durch das Schiff in Not, die leitende Funkstelle <span class="alt">oder</span> den On-Scene-Coordinator <span class="opt">(OSC)</span></li>
+        <li><span class="fn">4</span><span class="who">Notverkehr beenden</span>Nur durch das Schiff in Not, die leitende Funkstelle <span class="alt">oder</span> den On-Scene-Coordinator <span class="opt">(OSC)</span>. Kein DSC Cancel, da durch Bestätigung des Alarms durch die KüFuSt bereits weiteres Aussenden gestoppt wurde.</li>
         <li><span class="fn">5</span><span class="who">Notmeldung bestätigen</span>Erst nach 5 min <span class="alt">oder</span> auf Aufforderung, und nur wenn das eigene Schiff helfen kann. Eine DSC-Bestätigung ist KüFuSt bzw. dem MRCC vorbehalten.</li>
         <li><span class="fn">6</span><span class="who">Funkverkehr vor Ort</span>MAYDAY steht vor jeder einzelnen Meldung im laufenden Notverkehr — auch vor der kürzesten Rückfrage. Die Dreifachnennung gehört zur Eröffnung des Notverkehrs; im laufenden Verkehr wird der Absender einfach genannt. Leitung hat das Schiff in Not <span class="alt">oder</span> der OSC.</li>
         <li><span class="fn">7</span><span class="who">Funkstille gebieten</span>Nur wer den Notverkehr <span class="alt">oder</span> SAR-Einsatz leitet, darf sie gebieten.</li>
