@@ -18,10 +18,10 @@
      4. Notmeldung weiterleiten ★
      5. Notverkehr beenden ★
      6. Notmeldung widerrufen ★
-     7. Notmeldung bestätigen ★
-     8. Funkverkehr vor Ort
-     9. Dringlichkeitsmeldung zurücknehmen
-    10. Routine-DSC-Ruf an eine andere Funkstelle
+     7. Dringlichkeitsmeldung zurücknehmen
+     8. Routine-DSC-Ruf an eine andere Funkstelle
+     9. Notmeldung bestätigen ★
+    10. Funkverkehr vor Ort
     11. Funkstille gebieten
 
   Der Zelleninhalt steht bewusst je auf EINER Quelltextzeile: die Zellen sind
@@ -35,9 +35,10 @@
   <span class="rep">3x</span>   dreimal sagen
   <span class="opt">( … )</span>  optional, Klammern gehören mit hinein
   <span class="alt">oder</span>   Alternative, auch "Option 1:" / "Option 2:"
-  <span class="dash">·</span>   wird bewusst nicht gesprochen
+  <td class="core silent"> mit dem kleinen <svg> darin: wird bewusst nicht
+                            gesprochen — die Zelle ist durchkreuzt
   <span class="dash">–</span>   diesen Abschnitt gibt es hier nicht
-  Die beiden Zeichen bedeuten Verschiedenes; bitte nicht angleichen.
+  Beides bedeutet Verschiedenes; bitte nicht angleichen.
 
   Zusammengefasste Zellen
   -----------------------
@@ -178,7 +179,23 @@
   td.note { color: var(--soft); }
   /* leer heisst: wird nicht gesprochen. Fehlt heisst: gibt es hier nicht. */
   .dash { color: var(--rule); }
-  td.silent .dash { color: var(--mute); }
+  /* Eine Zelle, in der bewusst nichts gesprochen wird, ist durchkreuzt — in
+     der Farbe der Zeilentrenner, damit sie das Blatt nicht anschreit. Als
+     gezeichneter Strich, nicht als Hintergrundfläche: Striche druckt jeder
+     Drucker, Flächen nur, wenn Hintergrundgrafiken eingeschaltet sind. */
+  td.silent { position: relative; }
+  td.silent svg {
+    position: absolute;
+    left: 0;
+    top: .8mm;
+    /* Breite und Höhe ausgerechnet, damit das SVG die Zelle füllt; ohne
+       viewBox wird nichts skaliert und der Strich bleibt haarfein. */
+    width: calc(100% - 2.2mm);
+    height: calc(100% - 1.6mm);
+    fill: none;
+    stroke: var(--rule);
+    stroke-width: .4pt;
+  }
 
   /* Eine Zelle, die für mehrere Sprüche zugleich gilt, ist über ihre ganze
      Spanne eingefasst: der Kasten zeigt, wie weit die Angabe reicht, statt
@@ -246,10 +263,10 @@
         <col style="width:24.5mm">
         <col style="width:22.1mm">
         <col style="width:23mm">
-        <col style="width:21.5mm">
-        <col style="width:24.3mm">
         <col style="width:24.3mm">
         <col style="width:24.7mm">
+        <col style="width:21.5mm">
+        <col style="width:24.3mm">
         <col style="width:21.2mm">
       </colgroup>
       <thead>
@@ -261,10 +278,10 @@
           <th scope="col">Notmeldung weiterleiten <span class="star">★</span></th>
           <th scope="col">Notverkehr beenden <span class="star">★</span><span class="fn">4</span></th>
           <th scope="col">Notmeldung widerrufen <span class="star">★</span></th>
-          <th scope="col">Notmeldung bestätigen <span class="star">★</span><span class="fn">5</span></th>
-          <th scope="col">Funkverkehr vor Ort<span class="fn">6</span></th>
           <th scope="col">Dringlichkeitsmeldung zurücknehmen</th>
           <th scope="col">Routine-DSC-Ruf an eine andere Funkstelle</th>
+          <th scope="col">Notmeldung bestätigen <span class="star">★</span><span class="fn">5</span></th>
+          <th scope="col">Funkverkehr vor Ort<span class="fn">6</span></th>
           <th scope="col">Funkstille gebieten<span class="fn">7</span></th>
         </tr>
       </thead>
@@ -278,9 +295,9 @@
           <td class="note">kein DSC</td>
           <td class="note">Cancel, Gerät neu starten, dann Sprechfunk</td>
           <td class="note">kein DSC</td>
-          <td class="note">kein DSC</td>
-          <td class="note">kein DSC</td>
           <td class="note">DSC Call, Individual Call, MMSI, Routine, Channel, Wait for ACK</td>
+          <td class="note">kein DSC</td>
+          <td class="note">kein DSC</td>
           <td class="note">kein DSC</td>
         </tr>
         <tr>
@@ -292,9 +309,9 @@
           <td class="note">16</td>
           <td class="note">16</td>
           <td class="note">16</td>
-          <td class="note">16</td>
-          <td class="note">16</td>
           <td class="note">Arbeitskanal <span class="opt">(z.B., 08, 72, 77)</span> <span class="alt">oder</span> KüFuSt-Kanal</td>
+          <td class="note">16</td>
+          <td class="note">16</td>
           <td class="note">16</td>
         </tr>
         <tr>
@@ -304,55 +321,52 @@
           <td class="core"><span class="rep">3x</span> SECURITÉ</td>
           <td class="core"><span class="rep">3x</span> MAYDAY RELAY</td>
           <td class="core">MAYDAY</td>
-          <td class="core silent"><span class="dash">·</span></td>
-          <td class="core">MAYDAY</td>
-          <td class="core">MAYDAY</td>
+          <td class="core silent"><svg aria-hidden="true"><line x1="0" y1="0" x2="100%" y2="100%"/><line x1="0" y1="100%" x2="100%" y2="0"/></svg></td>
           <td class="core"><span class="rep">3x</span> PAN PAN</td>
-          <td class="core silent"><span class="dash">·</span></td>
-          <td class="core silent"><span class="dash">·</span></td>
+          <td class="core silent"><svg aria-hidden="true"><line x1="0" y1="0" x2="100%" y2="100%"/><line x1="0" y1="100%" x2="100%" y2="0"/></svg></td>
+          <td class="core">MAYDAY</td>
+          <td class="core">MAYDAY</td>
+          <td class="core silent"><svg aria-hidden="true"><line x1="0" y1="0" x2="100%" y2="100%"/><line x1="0" y1="100%" x2="100%" y2="0"/></svg></td>
         </tr>
         <tr>
           <th scope="row" class="core">Adressat</th>
-          <td class="core silent"><span class="dash">·</span></td>
+          <td class="core silent"><svg aria-hidden="true"><line x1="0" y1="0" x2="100%" y2="100%"/><line x1="0" y1="100%" x2="100%" y2="0"/></svg></td>
           <td class="core" colspan="3"><span class="rep">3x</span> ALL STATIONS
 <span class="alt">oder</span> <span class="rep">3x</span> <span class="fill">&lt;KüFuSt&gt;</span> <span class="opt">(BREMEN RESCUE)</span></td>
           <td class="core" colspan="2"><span class="rep">3x</span> ALL STATIONS</td>
-          <td class="core"><span class="opt">(Yacht)</span> <span class="fill">&lt;Schiff in Not&gt;</span>
-CALL SIGN <span class="fill">&lt;Buchstabiert&gt;</span>
-<span class="alt">oder</span> MMSI <span class="fill">&lt;MMSI&gt;</span></td>
-          <td class="core"><span class="fill">&lt;Schiff in Not, OSC oder helfendes Fahrzeug&gt;</span></td>
           <td class="core"><span class="rep">3x</span> ALL STATIONS
 <span class="alt">oder</span> <span class="rep">3x</span> <span class="fill">&lt;in der Dringlichkeits­meldung adressierte Funkstelle(n)&gt;</span></td>
           <td class="core"><span class="opt">(Yacht)</span> <span class="rep">3x</span> <span class="fill">&lt;Schiffsname&gt;</span> CALL SIGN <span class="fill">&lt;Buchstabiert&gt;</span> MMSI <span class="fill">&lt;MMSI&gt;</span>
 <span class="alt">oder</span> <span class="rep">3x</span> <span class="fill">&lt;KüFuSt&gt;</span></td>
+          <td class="core"><span class="opt">(Yacht)</span> <span class="fill">&lt;Schiff in Not&gt;</span>
+CALL SIGN <span class="fill">&lt;Buchstabiert&gt;</span>
+<span class="alt">oder</span> MMSI <span class="fill">&lt;MMSI&gt;</span></td>
+          <td class="core"><span class="fill">&lt;Schiff in Not, OSC oder helfendes Fahrzeug&gt;</span></td>
           <td class="core">ALL STATIONS
 <span class="alt">oder</span> <span class="fill">&lt;störende Funkstelle&gt;</span></td>
         </tr>
         <tr>
           <th scope="row" class="core">Absender</th>
-          <td class="core" colspan="6">THIS IS <span class="opt">(Yacht)</span> <span class="rep">3x</span> <span class="fill">&lt;Schiffsname&gt;</span>
+          <td class="core" colspan="8">THIS IS <span class="opt">(Yacht)</span> <span class="rep">3x</span> <span class="fill">&lt;Schiffsname&gt;</span>
 CALL SIGN <span class="fill">&lt;Buchstabiert&gt;</span>
 MMSI <span class="fill">&lt;MMSI&gt;</span></td>
           <td class="core" colspan="2">THIS IS <span class="opt">(Yacht)</span> <span class="fill">&lt;Schiffsname&gt;</span>
 CALL SIGN <span class="fill">&lt;Buchstabiert&gt;</span>
 MMSI <span class="fill">&lt;MMSI&gt;</span></td>
-          <td class="core" colspan="2">THIS IS <span class="opt">(Yacht)</span> <span class="rep">3x</span> <span class="fill">&lt;Schiffsname&gt;</span>
-CALL SIGN <span class="fill">&lt;Buchstabiert&gt;</span>
-MMSI <span class="fill">&lt;MMSI&gt;</span></td>
-          <td class="core silent"><span class="dash">·</span></td>
+          <td class="core silent"><svg aria-hidden="true"><line x1="0" y1="0" x2="100%" y2="100%"/><line x1="0" y1="100%" x2="100%" y2="0"/></svg></td>
         </tr>
         <tr>
           <th scope="row" class="core">Meldung</th>
           <td class="core">MAYDAY
-<span class="opt">(Yacht)</span> <span class="fill">&lt;Schiffsname&gt;</span>
+<span class="opt">(Yacht)</span> <span class="fill">&lt;Name&gt;</span>
 CALL SIGN <span class="fill">&lt;Buchstabiert&gt;</span>
 MMSI <span class="fill">&lt;MMSI&gt;</span>
 
-IN POSITION <span class="fill">&lt;Grad&gt;</span> DEGREES <span class="fill">&lt;Minuten&gt;</span> MINUTES <span class="fill">&lt;North/South&gt;</span>
-<span class="fill">&lt;Grad&gt;</span> DEGREES <span class="fill">&lt;Minuten&gt;</span> MINUTES <span class="fill">&lt;East/West&gt;</span>
+IN POSITION <span class="fill">&lt;Grad&gt;</span> DEGREES <span class="fill">&lt;Minuten&gt;</span> MINUTES <span class="fill">&lt;N/S&gt;</span>
+<span class="fill">&lt;Grad&gt;</span> DEGREES <span class="fill">&lt;Minuten&gt;</span> MINUTES <span class="fill">&lt;E/W&gt;</span>
 AT <span class="fill">&lt;Zeit&gt;</span> UTC
 
-<span class="fill">&lt;Art des Notfalls&gt;</span> <span class="opt">(THE SHIP IS SINKING)</span>
+<span class="fill">&lt;Art des Notfalls&gt;</span> <span class="opt">(I AM SINKING AFTER COLLISION / FLOODING / ... or I AM NOT UNDER COMMAND)</span>
 REQUIRE IMMEDIATE ASSISTANCE
 <span class="fill">&lt;Angaben, die die Hilfe erleichtern&gt;</span> <span class="opt">(THE SHIP IS ...)</span></td>
           <td class="core"><span class="opt">(IN POSITION </span><span class="fill">&lt;Grad&gt;</span><span class="opt"> DEGREES </span><span class="fill">&lt;Minuten&gt;</span><span class="opt"> MINUTES </span><span class="fill">&lt;North/South&gt;</span><span class="opt">
@@ -383,15 +397,15 @@ CALL SIGN <span class="fill">&lt;Buchstabiert&gt;</span>
 MMSI <span class="fill">&lt;MMSI&gt;</span></td>
           <td class="core">PLEASE CANCEL MY DISTRESS ALERT OF
 <span class="opt">(</span><span class="fill">&lt;Tag und Monat, wenn nicht heute&gt;</span><span class="opt">)</span> <span class="fill">&lt;Zeit des ursprünglichen Notalarms&gt;</span> UTC</td>
-          <td class="core silent"><span class="dash">·</span></td>
+          <td class="core">PLEASE CANCEL MY URGENCY MESSAGE OF
+<span class="opt">(</span><span class="fill">&lt;Tag und Monat, wenn nicht heute&gt;</span><span class="opt">)</span> <span class="fill">&lt;Zeit der ursprünglichen Dringlichkeits­meldung&gt;</span> UTC</td>
+          <td class="core">AT WHAT TIME IS THE BRIDGE OPEN TODAY?</td>
+          <td class="core silent"><svg aria-hidden="true"><line x1="0" y1="0" x2="100%" y2="100%"/><line x1="0" y1="100%" x2="100%" y2="0"/></svg></td>
           <td class="core"><span class="fill">&lt;Meldung&gt;</span> <span class="opt">(I AM PROCEEDING TO YOUR ASSISTANCE
 MY POSITION IS </span><span class="fill">&lt;Grad&gt;</span><span class="opt"> DEGREES </span><span class="fill">&lt;Minuten&gt;</span><span class="opt"> MINUTES </span><span class="fill">&lt;North/South&gt;</span><span class="opt">
 </span><span class="fill">&lt;Grad&gt;</span><span class="opt"> DEGREES </span><span class="fill">&lt;Minuten&gt;</span><span class="opt"> MINUTES </span><span class="fill">&lt;East/West&gt;</span><span class="opt">
 MY ETA IS </span><span class="fill">&lt;Zeit&gt;</span><span class="opt"> UTC)</span></td>
-          <td class="core">PLEASE CANCEL MY URGENCY MESSAGE OF
-<span class="opt">(</span><span class="fill">&lt;Tag und Monat, wenn nicht heute&gt;</span><span class="opt">)</span> <span class="fill">&lt;Zeit der ursprünglichen Dringlichkeits­meldung&gt;</span> UTC</td>
-          <td class="core">AT WHAT TIME IS THE BRIDGE OPEN TODAY?</td>
-          <td class="core silent"><span class="dash">·</span></td>
+          <td class="core silent"><svg aria-hidden="true"><line x1="0" y1="0" x2="100%" y2="100%"/><line x1="0" y1="100%" x2="100%" y2="0"/></svg></td>
         </tr>
         <tr>
           <th scope="row" class="core">Abschluss</th>
@@ -401,9 +415,9 @@ MY ETA IS </span><span class="fill">&lt;Zeit&gt;</span><span class="opt"> UTC)</
           <td class="core">OVER</td>
           <td class="core">SILENCE FINI</td>
           <td class="core">OUT</td>
-          <td class="core">RECEIVED MAYDAY</td>
-          <td class="core">OVER</td>
           <td class="core">OUT</td>
+          <td class="core">OVER</td>
+          <td class="core">RECEIVED MAYDAY</td>
           <td class="core">OVER</td>
           <td class="core">SILENCE MAYDAY</td>
         </tr>
