@@ -80,6 +80,7 @@
     --mute: #767D84;   /* Markierungen, Labels    */
     --soft: #474E55;   /* Kommentar               */
     --rule: #C9CED3;
+    --band: #FBF1DD;   /* dieser Spruch hat einen DSC-Schritt */
   }
 
   * { margin: 0; padding: 0; box-sizing: border-box; }
@@ -207,6 +208,18 @@
     text-align: center;
   }
 
+  /* In der DSC-Zeile hebt sich ab, wo überhaupt ein DSC-Schritt ansteht.
+     Bewusst eine schlichte Fläche statt eines Verlaufs: den schreibt Chrome
+     als Schattierungsmuster ins PDF, was unterschiedlich gerastert wird.
+     Es ist das einzige Element des Blattes, das beim Drucken eingeschaltete
+     Hintergrundgrafiken braucht. */
+  td.dsc {
+    background: var(--band);
+    /* die Rinne bleibt weiss, sonst verschmelzen zwei markierte Nachbarn zu
+       einem Block und lesen sich wie eine zusammengefasste Zelle */
+    box-shadow: inset -2.2mm 0 0 #fff;
+  }
+
   /* Hinweise als Fussnotenband unter der Tabelle */
   .fn {
     font-size: .82em;
@@ -237,6 +250,20 @@
   footer .fn { margin-left: 0; margin-right: .5mm; }
   footer .who { font-weight: 700; color: var(--ink); }
   footer .who::after { content: " — "; font-weight: 400; color: var(--mute); }
+
+  /* Was nicht als Spruch auf dem Blatt steht, aber trotzdem sitzen muss:
+     eine Leiste am Fuß, eingefasst wie die zusammengefassten Zellen, damit
+     sie als eigene Aussage und nicht als weitere Fußnote gelesen wird. */
+  .leiste {
+    margin-top: 1.8mm;
+    padding: 1.1mm 1.4mm;
+    border: .5pt solid var(--fill);
+    font-size: 6.4pt;
+    line-height: 1.3;
+    color: var(--ink);
+    text-align: center;
+  }
+  .leiste b { font-weight: 700; color: var(--fill); }
 
   @media print {
     html, body { background: #fff; }
@@ -288,14 +315,14 @@
       <tbody>
         <tr>
           <th scope="row" class="note">DSC</th>
-          <td class="note">Distress Call</td>
-          <td class="note">All Ships Call <span class="alt">oder</span> Individual Call <span class="opt">(+ MMSI)</span>, Priority: Urgency</td>
-          <td class="note">All Ships Call <span class="alt">oder</span> Individual Call <span class="opt">(+ MMSI)</span>, Priority: Security</td>
+          <td class="note dsc">Distress Call</td>
+          <td class="note dsc">All Ships Call <span class="alt">oder</span> Individual Call <span class="opt">(+ MMSI)</span>, Priority: Urgency</td>
+          <td class="note dsc">All Ships Call <span class="alt">oder</span> Individual Call <span class="opt">(+ MMSI)</span>, Priority: Security</td>
           <td class="note">kein DSC</td>
           <td class="note">kein DSC</td>
-          <td class="note">Cancel, Gerät neu starten, dann Sprechfunk</td>
+          <td class="note dsc">Cancel, Gerät neu starten, dann Sprechfunk</td>
           <td class="note">kein DSC</td>
-          <td class="note">DSC Call, Individual Call, MMSI, Routine, Channel, Wait for ACK</td>
+          <td class="note dsc">DSC Call, Individual Call, MMSI, Routine, Channel, Wait for ACK</td>
           <td class="note">kein DSC</td>
           <td class="note">kein DSC</td>
           <td class="note">kein DSC</td>
@@ -435,6 +462,9 @@ MY ETA IS </span><span class="fill">&lt;Zeit&gt;</span><span class="opt"> UTC)</
         <li><span class="fn">7</span><span class="who">Funkstille gebieten</span>Nur wer den Notverkehr <span class="alt">oder</span> SAR-Einsatz leitet, darf sie gebieten.</li>
       </ol>
     </footer>
+
+    <div class="leiste"><b>Am Funkgerät ebenfalls zu üben:</b>
+      DSC-Speicherabfrage und Empfangsbestätigung</div>
   </section>
 </body>
 </html>
